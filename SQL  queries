@@ -1,0 +1,64 @@
+Business Question 1: What numeric features contribute most to churn?
+
+SELECT 
+  AVG(CASE WHEN Churn = 'Yes' THEN tenure ELSE NULL END) AS avg_tenure_churned,
+  AVG(CASE WHEN Churn = 'No' THEN tenure ELSE NULL END) AS avg_tenure_not_churned,
+  AVG(CASE WHEN Churn = 'Yes' THEN MonthlyCharges ELSE NULL END) AS avg_monthly_churned,
+  AVG(CASE WHEN Churn = 'No' THEN MonthlyCharges ELSE NULL END) AS avg_monthly_not_churned,
+  AVG(CASE WHEN Churn = 'Yes' THEN TotalCharges ELSE NULL END) AS avg_total_churned,
+  AVG(CASE WHEN Churn = 'No' THEN TotalCharges ELSE NULL END) AS avg_total_not_churned
+FROM telco_churn;
+
+Business Question 2: How do contract type and internet service affect churn rate?
+
+SELECT 
+  Contract,
+  InternetService,
+  COUNT(*) AS total_customers,
+  SUM(CASE WHEN Churn = 'Yes' THEN 1 ELSE 0 END) AS churned_customers,
+  ROUND(SUM(CASE WHEN Churn = 'Yes' THEN 1 ELSE 0 END) * 100.0 / COUNT(*), 2) AS churn_rate_percentage
+FROM telco_churn
+GROUP BY Contract, InternetService
+ORDER BY churn_rate_percentage DESC;
+
+Business Question 3: Which contract type has the highest churn rate?
+
+SELECT 
+  Contract,
+  COUNT(*) AS total_customers,
+  SUM(CASE WHEN Churn = 'Yes' THEN 1 ELSE 0 END) AS churned_customers,
+  ROUND(SUM(CASE WHEN Churn = 'Yes' THEN 1 ELSE 0 END) * 100.0 / COUNT(*), 2) AS churn_rate_percentage
+FROM telco_churn
+GROUP BY Contract
+ORDER BY churn_rate_percentage DESC;
+
+
+Business Question 4: Do churned customers have higher monthly charges than non-churned ones?
+
+SELECT 
+  Churn,
+  ROUND(AVG(MonthlyCharges), 2) AS avg_monthly_charges
+FROM telco_churn
+GROUP BY Churn;
+
+Business Question 5: How does churn vary across different payment methods?
+
+SELECT 
+  PaymentMethod,
+  COUNT(*) AS total_customers,
+  SUM(CASE WHEN Churn = 'Yes' THEN 1 ELSE 0 END) AS churned_customers,
+  ROUND(SUM(CASE WHEN Churn = 'Yes' THEN 1 ELSE 0 END) * 100.0 / COUNT(*), 2) AS churn_rate_percentage
+FROM telco_churn
+GROUP BY PaymentMethod
+ORDER BY churn_rate_percentage DESC;
+
+Business Question 6: How does churn change with customer tenure?
+
+SELECT 
+  tenure,
+  COUNT(*) AS total_customers,
+  SUM(CASE WHEN Churn = 'Yes' THEN 1 ELSE 0 END) AS churned_customers,
+  ROUND(SUM(CASE WHEN Churn = 'Yes' THEN 1 ELSE 0 END) * 100.0 / COUNT(*), 2) AS churn_rate_percentage
+FROM telco_churn
+GROUP BY tenure
+ORDER BY tenure ASC;
